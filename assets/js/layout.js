@@ -552,6 +552,11 @@ window.addEventListener('pageshow', function (e) {
 
 // === INVERT CURSOR BLOB (Metaball + Spring Physics) ===
 (function () {
+  // Safari has a rendering bug where mix-blend-mode:difference + blur/contrast filter
+  // on a canvas causes the entire page to flash bright — disable the effect there.
+  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) return;
+
   var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
   var isTouching = false;
 
