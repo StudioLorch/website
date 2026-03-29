@@ -552,8 +552,9 @@ window.addEventListener('pageshow', function (e) {
 
 // === INVERT CURSOR BLOB (Metaball + Spring Physics) ===
 (function () {
-  // Safari has a rendering bug where mix-blend-mode:difference + blur/contrast filter
-  // on a canvas causes the entire page to flash bright — force glow mode there instead.
+  // Safari bug: mix-blend-mode:difference + blur/contrast filter on canvas causes
+  // the entire page to flash bright. Fix: disable the goo filter on Safari so
+  // the difference cursor still works, just without the metaball merge effect.
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
@@ -564,7 +565,8 @@ window.addEventListener('pageshow', function (e) {
   // Moving → gooey filter (blur+contrast) for liquid metaball effect
   // Idle   → filter:none so the resting circle stays perfectly crisp
   // CSS transition on filter smoothly morphs between the two states.
-  var FILTER_ACTIVE = 'blur(14px) contrast(18)';
+  // On Safari the goo filter is disabled to prevent the page-flash bug.
+  var FILTER_ACTIVE = isSafari ? 'none' : 'blur(14px) contrast(18)';
   var FILTER_IDLE   = 'none';
 
   var canvas = document.createElement('canvas');
@@ -734,7 +736,7 @@ window.addEventListener('pageshow', function (e) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     if (!isVisible) { requestAnimationFrame(animate); return; }
-    var glowMode = !!window._cursorHidden || isSafari;
+    var glowMode = !!window._cursorHidden;
 
     // Derive smooth velocity from the lerped blob position — no raw mouse jitter
     var prevBX = blobX, prevBY = blobY;
