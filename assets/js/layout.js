@@ -553,9 +553,8 @@ window.addEventListener('pageshow', function (e) {
 // === INVERT CURSOR BLOB (Metaball + Spring Physics) ===
 (function () {
   // Safari has a rendering bug where mix-blend-mode:difference + blur/contrast filter
-  // on a canvas causes the entire page to flash bright — disable the effect there.
+  // on a canvas causes the entire page to flash bright — force glow mode there instead.
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  if (isSafari) return;
 
   var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
   var isTouching = false;
@@ -735,7 +734,7 @@ window.addEventListener('pageshow', function (e) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     if (!isVisible) { requestAnimationFrame(animate); return; }
-    var glowMode = !!window._cursorHidden;
+    var glowMode = !!window._cursorHidden || isSafari;
 
     // Derive smooth velocity from the lerped blob position — no raw mouse jitter
     var prevBX = blobX, prevBY = blobY;
