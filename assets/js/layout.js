@@ -552,34 +552,32 @@ window.addEventListener('pageshow', function (e) {
 
 // === INVERT CURSOR BLOB (Metaball + Spring Physics) ===
 (function () {
+  // Safari has a rendering bug where mix-blend-mode:difference + blur/contrast filter
+  // on a canvas causes the entire page to flash bright — disable the effect there.
+  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) return;
+
   var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
   var isTouching = false;
 
   // --- Canvas ---
-  // Safari bug: having CSS filter + mix-blend-mode on the SAME element causes
-  // Safari to apply the filter to the composited result instead of the canvas
-  // alone, burning the entire page. Fix: put mix-blend-mode on a wrapper div
-  // and filter on the canvas — different elements, correct render order.
+  // Single canvas handles both states:
+  // Moving → gooey filter (blur+contrast) for liquid metaball effect
+  // Idle   → filter:none so the resting circle stays perfectly crisp
+  // CSS transition on filter smoothly morphs between the two states.
   var FILTER_ACTIVE = 'blur(14px) contrast(18)';
   var FILTER_IDLE   = 'none';
 
-  var canvasWrap = document.createElement('div');
-  canvasWrap.style.cssText = [
-    'position:fixed', 'inset:0',
-    'pointer-events:none', 'z-index:10000',
-    'mix-blend-mode:difference'
-  ].join(';');
-  document.body.appendChild(canvasWrap);
-
   var canvas = document.createElement('canvas');
   canvas.style.cssText = [
-    'position:absolute', 'inset:0',
-    'pointer-events:none',
+    'position:fixed', 'top:0', 'left:0',
+    'pointer-events:none', 'z-index:10000',
+    'mix-blend-mode:difference',
     'filter:' + FILTER_IDLE,
     'transition:filter 0.5s ease',
     'visibility:hidden'
   ].join(';');
-  canvasWrap.appendChild(canvas);
+  document.body.appendChild(canvas);
   var canvasReady = false;
   setTimeout(function () {
     canvasReady = true;
@@ -594,7 +592,7 @@ window.addEventListener('pageshow', function (e) {
     'position:fixed', 'top:0', 'left:0',
     'pointer-events:none', 'z-index:10001',
     'mix-blend-mode:screen',
-    'filter:blur(14px) contrast(18)',
+    'filter:' + FILTER_ACTIVE,
     'visibility:hidden'
   ].join(';');
   document.body.appendChild(canvasL);
@@ -636,6 +634,7 @@ window.addEventListener('pageshow', function (e) {
   var isVisible = !!_init;
   var isHovering = false;
   var lastMoveTime = 0;
+  var wasIdle = true;
   var history = []; // { x, y, t }
   var labelProgress = 0; // 0 = no label, 1 = label fully active (lerped)
   var moveAlpha = 0; // smooth swell-in when cursor starts moving
@@ -758,6 +757,10 @@ window.addEventListener('pageshow', function (e) {
     canvas.style.visibility = glowMode ? 'hidden' : (canvasReady ? 'visible' : 'hidden');
     var trailGone = history.length <= 1;
     var wantCrisp = idle && trailGone && labelProgress < 0.05 && splashP <= 0;
+    if (!glowMode && wantCrisp !== wasIdle) {
+      canvas.style.filter = wantCrisp ? FILTER_IDLE : FILTER_ACTIVE;
+      wasIdle = wantCrisp;
+    }
 
     // currentR always stays at least effectiveIdleR — no shrinking below label minimum.
     // On touch devices, shrink to 0 when finger is lifted.
@@ -987,13 +990,6 @@ window.addEventListener('pageshow', function (e) {
     } else {
       canvasG.style.visibility = 'hidden';
       canvasG.style.filter = 'none';
-    }
-
-    // --- Toggle goo filter via CSS on canvas (filter and blend-mode on separate
-    // elements avoids the Safari colour-burn bug).
-    if (!glowMode && wantCrisp !== canvas._wasCrisp) {
-      canvas.style.filter = wantCrisp ? FILTER_IDLE : FILTER_ACTIVE;
-      canvas._wasCrisp = wantCrisp;
     }
 
     requestAnimationFrame(animate);
