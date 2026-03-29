@@ -552,11 +552,6 @@ window.addEventListener('pageshow', function (e) {
 
 // === INVERT CURSOR BLOB (Metaball + Spring Physics) ===
 (function () {
-  // Safari bug: mix-blend-mode:difference + blur/contrast filter on canvas causes
-  // the entire page to flash bright. Fix: disable the goo filter on Safari so
-  // the difference cursor still works, just without the metaball merge effect.
-  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
   var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
   var isTouching = false;
 
@@ -565,20 +560,30 @@ window.addEventListener('pageshow', function (e) {
   // Moving → gooey filter (blur+contrast) for liquid metaball effect
   // Idle   → filter:none so the resting circle stays perfectly crisp
   // CSS transition on filter smoothly morphs between the two states.
-  // On Safari the goo filter is disabled to prevent the page-flash bug.
-  var FILTER_ACTIVE = isSafari ? 'none' : 'blur(14px) contrast(18)';
+  //
+  // Safari bug fix: place mix-blend-mode + filter on a wrapper div instead of
+  // directly on the canvas. This separates them in Safari's compositing pipeline
+  // and prevents the full-page flash while keeping the full goo effect intact.
+  var FILTER_ACTIVE = 'blur(14px) contrast(18)';
   var FILTER_IDLE   = 'none';
 
-  var canvas = document.createElement('canvas');
-  canvas.style.cssText = [
-    'position:fixed', 'top:0', 'left:0',
+  var canvasWrap = document.createElement('div');
+  canvasWrap.style.cssText = [
+    'position:fixed', 'top:0', 'left:0', 'width:100%', 'height:100%',
     'pointer-events:none', 'z-index:10000',
     'mix-blend-mode:difference',
     'filter:' + FILTER_IDLE,
-    'transition:filter 0.5s ease',
+    'transition:filter 0.5s ease'
+  ].join(';');
+  document.body.appendChild(canvasWrap);
+
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = [
+    'position:absolute', 'top:0', 'left:0',
+    'pointer-events:none',
     'visibility:hidden'
   ].join(';');
-  document.body.appendChild(canvas);
+  canvasWrap.appendChild(canvas);
   var canvasReady = false;
   setTimeout(function () {
     canvasReady = true;
@@ -759,7 +764,7 @@ window.addEventListener('pageshow', function (e) {
     var trailGone = history.length <= 1;
     var wantCrisp = idle && trailGone && labelProgress < 0.05 && splashP <= 0;
     if (!glowMode && wantCrisp !== wasIdle) {
-      canvas.style.filter = wantCrisp ? FILTER_IDLE : FILTER_ACTIVE;
+      canvasWrap.style.filter = wantCrisp ? FILTER_IDLE : FILTER_ACTIVE;
       wasIdle = wantCrisp;
     }
 
