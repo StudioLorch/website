@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f5">
+  <title>Brand Design Services · Timo Lorch | Zürich</title>
+  <meta name="description" content="Brand Design, Corporate Identity, Visual Identity und Brand Systems – freischaffender Senior Brand Designer in Zürich für Unternehmen jeder Grösse.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>body { opacity: 0; }</style>
+</head>
+<body class="services">
+
+  <!-- Site Header (injected by layout.js) -->
+  <div id="site-nav"></div>
+
+  <!-- Hero -->
+  <section class="services-hero">
+    <h1 class="services-hero__headline reveal">Was ich für Marken tue.</h1>
+    <p class="services-hero__intro reveal">Als freischaffender Senior Brand Designer unterstütze ich Unternehmen dabei, ihre Marke strategisch zu schärfen und visuell auf den Punkt zu bringen. Ich arbeite sowohl direkt mit Unternehmen als auch als verlängerter Arm von Agenturen – überall dort, wo Marken im Wandel, im Wachstum oder in der Neuausrichtung stehen.</p>
+  </section>
+
+  <!-- Services -->
+  <section class="services-grid">
+
+    <div class="service-block reveal">
+      <h2 class="service-block__title">Marke & Identität</h2>
+      <p class="service-block__text">Jede starke Marke beginnt mit einer klaren Haltung. Ich entwickle visuelle Identitäten, die auf der Markenstrategie aufbauen und über alle Touchpoints hinweg funktionieren – vom Logo und Farbkonzept über Typografie und Bildsprache bis zum fertigen Erscheinungsbild.</p>
+      <ul class="service-block__tags">
+        <li>Visual Identity</li>
+        <li>Corporate Design</li>
+        <li>Logo Design</li>
+        <li>Markenentwicklung</li>
+        <li>Rebranding</li>
+        <li>Brand Refresh</li>
+      </ul>
+    </div>
+
+    <div class="service-block reveal">
+      <h2 class="service-block__title">Brand Systems & Guidelines</h2>
+      <p class="service-block__text">Gutes Design braucht ein System. Ich entwickle skalierbare Brand Systems, die sicherstellen, dass eine Marke konsistent bleibt – auch wenn mehrere Teams, Abteilungen oder externe Partner damit arbeiten. Dazu gehören Brand Portals, Design Libraries in Figma und praxistaugliche Guidelines, die nicht in der Schublade verschwinden.</p>
+      <ul class="service-block__tags">
+        <li>Brand Guidelines</li>
+        <li>Brand Portals</li>
+        <li>Design Systems</li>
+        <li>Figma Libraries</li>
+        <li>Templates</li>
+        <li>Brand Governance</li>
+      </ul>
+    </div>
+
+    <div class="service-block reveal">
+      <h2 class="service-block__title">Design Strategy & Beratung</h2>
+      <p class="service-block__text">Bevor gestaltet wird, muss klar sein, wohin die Reise geht. Ich begleite Unternehmen bei der visuellen Übersetzung ihrer Markenstrategie – von der Analyse des bestehenden Auftritts über Stakeholder-Alignment bis zur Entwicklung eines Design-Konzepts, das intern wie extern trägt.</p>
+      <ul class="service-block__tags">
+        <li>Design Strategy</li>
+        <li>Stakeholder Alignment</li>
+        <li>Brand Audit</li>
+        <li>Konzeptentwicklung</li>
+        <li>Creative Direction</li>
+      </ul>
+    </div>
+
+  </section>
+
+  <!-- Closing -->
+  <section class="services-closing reveal">
+    <p>Ob Rebranding eines Gesundheitsunternehmens, dreisprachiges Brand-Projekt für einen Retail-Anbieter oder der Aufbau eines gruppenweiten Brand Portals für einen Telekomanbieter – ich bringe die Erfahrung mit, komplexe Markenprojekte von der Strategie bis zur Umsetzung zu führen.</p>
+  </section>
+
+  <!-- Footer (injected by layout.js) -->
+  <div id="site-footer"></div>
+
+  <script src="assets/js/layout.js"></script>
+  <script src="assets/js/preloader.js"></script>
+  <script>
+    // Scroll reveal
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      els.forEach(function (el) { observer.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>

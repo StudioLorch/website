@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f5">
+  <title>c.test — Timo Lorch</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>body { opacity: 0; }</style>
+</head>
+<body class="ctest">
+
+  <!-- Site Header (injected by layout.js) -->
+  <div id="site-nav"></div>
+
+  <section class="ctest-section" data-cursor-color="0,255,255">
+    <div class="ctest-section__inner">
+      <h2 class="ctest-section__label">Cyan</h2>
+    </div>
+  </section>
+
+  <section class="ctest-section" data-cursor-color="184,115,51">
+    <div class="ctest-section__inner">
+      <h2 class="ctest-section__label">Copper</h2>
+    </div>
+  </section>
+
+  <section class="ctest-section ctest-section--gray" data-cursor-mode="glow">
+    <div class="ctest-section__inner">
+      <h2 class="ctest-section__label">Light Gray</h2>
+    </div>
+  </section>
+
+  <!-- Footer (injected by layout.js) -->
+  <div id="site-footer"></div>
+
+  <script src="assets/js/layout.js"></script>
+  <script src="assets/js/preloader.js"></script>
+  <script>
+    (function () {
+      var sections = document.querySelectorAll('.ctest-section[data-cursor-color]');
+      var glowSection = document.querySelector('[data-cursor-mode="glow"]');
+
+      document.addEventListener('mousemove', function (e) {
+        var found = null;
+        for (var i = 0; i < sections.length; i++) {
+          var rect = sections[i].getBoundingClientRect();
+          if (e.clientY >= rect.top && e.clientY <= rect.bottom &&
+              e.clientX >= rect.left && e.clientX <= rect.right) {
+            found = sections[i].dataset.cursorColor;
+            break;
+          }
+        }
+        window._cursorColorOverride = found;
+
+        // Glow section — organic blob drawn on transparent glow canvas
+        var gRect = glowSection.getBoundingClientRect();
+        window._cursorHidden = e.clientY >= gRect.top && e.clientY <= gRect.bottom &&
+                               e.clientX >= gRect.left && e.clientX <= gRect.right;
+      });
+    })();
+  </script>
+
+</body>
+</html>
