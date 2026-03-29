@@ -570,7 +570,7 @@ body.loaded .home-word {
   z-index: 1000;
   background: var(--color-text);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-start;
   padding: 40px var(--spacing-md);
   pointer-events: none;
@@ -584,7 +584,7 @@ body.loaded .home-word {
 
 .preloader__count {
   font-family: var(--font-main);
-  font-size: clamp(40px, 8vw, 100px);
+  font-size: clamp(80px, 16vw, 200px);
   font-weight: 300;
   color: #fff;
   line-height: 1;
