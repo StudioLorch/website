@@ -562,12 +562,15 @@ window.addEventListener('pageshow', function (e) {
   // This separates the goo filter from mix-blend-mode:difference at the CSS level,
   // fixing a Safari bug where CSS filter + mix-blend-mode on the same element
   // caused the entire page to colour-burn.
-  var FILTER_ACTIVE = 'blur(14px) contrast(18)';
-  var FILTER_IDLE   = 'none';
-
   // Offscreen canvas — receives all cursor drawing, never added to DOM.
   var canvasOff = document.createElement('canvas');
   var ctxOff    = canvasOff.getContext('2d');
+
+  // Intermediate canvas — holds the blur pass before contrast is applied.
+  // Splitting blur and contrast into two ctx.filter drawImage passes avoids
+  // Safari issues with chained filter functions in the Canvas 2D API.
+  var canvasMid = document.createElement('canvas');
+  var ctxMid    = canvasMid.getContext('2d');
 
   // Visible canvas — only mix-blend-mode, no CSS filter.
   var canvas = document.createElement('canvas');
@@ -592,7 +595,7 @@ window.addEventListener('pageshow', function (e) {
     'position:fixed', 'top:0', 'left:0',
     'pointer-events:none', 'z-index:10001',
     'mix-blend-mode:screen',
-    'filter:' + FILTER_ACTIVE,
+    'filter:blur(14px) contrast(18)',
     'visibility:hidden'
   ].join(';');
   document.body.appendChild(canvasL);
@@ -609,8 +612,8 @@ window.addEventListener('pageshow', function (e) {
   var ctxG = canvasG.getContext('2d');
 
   function resize() {
-    canvas.width  = canvasOff.width  = canvasL.width  = canvasG.width  = window.innerWidth;
-    canvas.height = canvasOff.height = canvasL.height = canvasG.height = window.innerHeight;
+    canvas.width  = canvasOff.width  = canvasMid.width  = canvasL.width  = canvasG.width  = window.innerWidth;
+    canvas.height = canvasOff.height = canvasMid.height = canvasL.height = canvasG.height = window.innerHeight;
   }
   resize();
   window.addEventListener('resize', resize);
@@ -987,14 +990,26 @@ window.addEventListener('pageshow', function (e) {
       canvasG.style.filter = 'none';
     }
 
-    // --- Copy offscreen → visible canvas with goo filter via Canvas 2D API ---
-    // Using ctx.filter instead of CSS filter keeps mix-blend-mode:difference
-    // on a separate CSS property, fixing Safari's colour-burn-the-whole-page bug.
+    // --- Copy offscreen → visible canvas with two-stage goo filter ---
+    // Split blur and contrast into separate passes to avoid Safari issues
+    // with chained ctx.filter functions. The visible canvas has only
+    // mix-blend-mode:difference and no CSS filter, fixing the colour-burn bug.
     if (!glowMode) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.filter = wantCrisp ? FILTER_IDLE : FILTER_ACTIVE;
-      ctx.drawImage(canvasOff, 0, 0);
-      ctx.filter = 'none';
+      if (wantCrisp) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(canvasOff, 0, 0);
+      } else {
+        // Pass 1: blur canvasOff → canvasMid
+        ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
+        ctxMid.filter = 'blur(14px)';
+        ctxMid.drawImage(canvasOff, 0, 0);
+        ctxMid.filter = 'none';
+        // Pass 2: contrast canvasMid → visible canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.filter = 'contrast(18)';
+        ctx.drawImage(canvasMid, 0, 0);
+        ctx.filter = 'none';
+      }
     }
 
     requestAnimationFrame(animate);
