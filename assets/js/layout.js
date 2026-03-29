@@ -556,31 +556,30 @@ window.addEventListener('pageshow', function (e) {
   var isTouching = false;
 
   // --- Canvas ---
-  // All cursor shapes are drawn to an offscreen canvas (ctxOff).
-  // At the end of each frame the offscreen content is copied to the visible canvas
-  // using ctx.filter (Canvas 2D API) for the goo effect, rather than a CSS filter.
-  // This separates the goo filter from mix-blend-mode:difference at the CSS level,
-  // fixing a Safari bug where CSS filter + mix-blend-mode on the same element
-  // caused the entire page to colour-burn.
-  // Offscreen canvas — receives all cursor drawing, never added to DOM.
-  var canvasOff = document.createElement('canvas');
-  var ctxOff    = canvasOff.getContext('2d');
+  // Safari bug: having CSS filter + mix-blend-mode on the SAME element causes
+  // Safari to apply the filter to the composited result instead of the canvas
+  // alone, burning the entire page. Fix: put mix-blend-mode on a wrapper div
+  // and filter on the canvas — different elements, correct render order.
+  var FILTER_ACTIVE = 'blur(14px) contrast(18)';
+  var FILTER_IDLE   = 'none';
 
-  // Intermediate canvas — holds the blur pass before contrast is applied.
-  // Splitting blur and contrast into two ctx.filter drawImage passes avoids
-  // Safari issues with chained filter functions in the Canvas 2D API.
-  var canvasMid = document.createElement('canvas');
-  var ctxMid    = canvasMid.getContext('2d');
+  var canvasWrap = document.createElement('div');
+  canvasWrap.style.cssText = [
+    'position:fixed', 'inset:0',
+    'pointer-events:none', 'z-index:10000',
+    'mix-blend-mode:difference'
+  ].join(';');
+  document.body.appendChild(canvasWrap);
 
-  // Visible canvas — only mix-blend-mode, no CSS filter.
   var canvas = document.createElement('canvas');
   canvas.style.cssText = [
-    'position:fixed', 'top:0', 'left:0',
-    'pointer-events:none', 'z-index:10000',
-    'mix-blend-mode:difference',
+    'position:absolute', 'inset:0',
+    'pointer-events:none',
+    'filter:' + FILTER_IDLE,
+    'transition:filter 0.5s ease',
     'visibility:hidden'
   ].join(';');
-  document.body.appendChild(canvas);
+  canvasWrap.appendChild(canvas);
   var canvasReady = false;
   setTimeout(function () {
     canvasReady = true;
@@ -612,8 +611,8 @@ window.addEventListener('pageshow', function (e) {
   var ctxG = canvasG.getContext('2d');
 
   function resize() {
-    canvas.width  = canvasOff.width  = canvasMid.width  = canvasL.width  = canvasG.width  = window.innerWidth;
-    canvas.height = canvasOff.height = canvasMid.height = canvasL.height = canvasG.height = window.innerHeight;
+    canvas.width  = canvasL.width  = canvasG.width  = window.innerWidth;
+    canvas.height = canvasL.height = canvasG.height = window.innerHeight;
   }
   resize();
   window.addEventListener('resize', resize);
@@ -717,7 +716,7 @@ window.addEventListener('pageshow', function (e) {
 
   // Catmull-Rom closed path for head blob
   function drawClosed(pts, c) {
-    c = c || ctxOff;
+    c = c || ctx;
     var n = pts.length;
     if (n < 3) return;
     c.moveTo(pts[0].x, pts[0].y);
@@ -733,8 +732,8 @@ window.addEventListener('pageshow', function (e) {
 
   function animate(t) {
     if (!canvasReady) { requestAnimationFrame(animate); return; }
-    ctxOff.fillStyle = 'black';
-    ctxOff.fillRect(0, 0, canvasOff.width, canvasOff.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     if (!isVisible) { requestAnimationFrame(animate); return; }
     var glowMode = !!window._cursorHidden;
@@ -857,13 +856,13 @@ window.addEventListener('pageshow', function (e) {
         var trailAlpha = ((splashP > 0 && idle) ? Math.pow(1 - splashP, 3) : 1) * moveAlpha;
         if (window._cursorColorOverride) {
           var _cc = window._cursorColorOverride.split(',');
-          ctxOff.fillStyle = 'rgba(' + (255 - _cc[0]) + ',' + (255 - _cc[1]) + ',' + (255 - _cc[2]) + ',' + trailAlpha + ')';
+          ctx.fillStyle = 'rgba(' + (255 - _cc[0]) + ',' + (255 - _cc[1]) + ',' + (255 - _cc[2]) + ',' + trailAlpha + ')';
         } else {
-          ctxOff.fillStyle = 'hsla(' + hue + ',100%,50%,' + trailAlpha + ')';
+          ctx.fillStyle = 'hsla(' + hue + ',100%,50%,' + trailAlpha + ')';
         }
-        ctxOff.beginPath();
-        trailPath(ctxOff);
-        ctxOff.fill();
+        ctx.beginPath();
+        trailPath(ctx);
+        ctx.fill();
       }
     }
 
@@ -879,13 +878,13 @@ window.addEventListener('pageshow', function (e) {
       var headHue = (t * 0.04) % 360;
       if (window._cursorColorOverride) {
         var _hc = window._cursorColorOverride.split(',');
-        ctxOff.fillStyle = 'rgba(' + (255 - _hc[0]) + ',' + (255 - _hc[1]) + ',' + (255 - _hc[2]) + ',' + headAlpha + ')';
+        ctx.fillStyle = 'rgba(' + (255 - _hc[0]) + ',' + (255 - _hc[1]) + ',' + (255 - _hc[2]) + ',' + headAlpha + ')';
       } else {
-        ctxOff.fillStyle = 'hsla(' + headHue + ',100%,50%,' + headAlpha + ')';
+        ctx.fillStyle = 'hsla(' + headHue + ',100%,50%,' + headAlpha + ')';
       }
-      ctxOff.beginPath();
+      ctx.beginPath();
       drawClosed(headPts);
-      ctxOff.fill();
+      ctx.fill();
     }
 
     // --- Click: expanding puff ring ---
@@ -901,11 +900,11 @@ window.addEventListener('pageshow', function (e) {
       var SEGS = 48;
       if (window._cursorColorOverride) {
         var _pc = window._cursorColorOverride.split(',');
-        ctxOff.fillStyle = 'rgba(' + (255 - _pc[0]) + ',' + (255 - _pc[1]) + ',' + (255 - _pc[2]) + ',' + ringAlpha + ')';
+        ctx.fillStyle = 'rgba(' + (255 - _pc[0]) + ',' + (255 - _pc[1]) + ',' + (255 - _pc[2]) + ',' + ringAlpha + ')';
       } else {
-        ctxOff.fillStyle = 'hsla(' + puffHue + ',100%,50%,' + ringAlpha + ')';
+        ctx.fillStyle = 'hsla(' + puffHue + ',100%,50%,' + ringAlpha + ')';
       }
-      ctxOff.beginPath();
+      ctx.beginPath();
       // Outer edge — clockwise
       for (var si = 0; si <= SEGS; si++) {
         var a  = (si / SEGS) * Math.PI * 2;
@@ -914,7 +913,7 @@ window.addEventListener('pageshow', function (e) {
         var or2 = outerR + on;
         var ox = blobX + Math.cos(a) * or2;
         var oy = blobY + Math.sin(a) * or2;
-        if (si === 0) ctxOff.moveTo(ox, oy); else ctxOff.lineTo(ox, oy);
+        if (si === 0) ctx.moveTo(ox, oy); else ctx.lineTo(ox, oy);
       }
       // Inner edge — counter-clockwise (cuts the hole)
       for (var si = SEGS; si >= 0; si--) {
@@ -924,10 +923,10 @@ window.addEventListener('pageshow', function (e) {
         var ir = innerR + iN;
         var ix = blobX + Math.cos(a) * Math.max(0, ir);
         var iy = blobY + Math.sin(a) * Math.max(0, ir);
-        ctxOff.lineTo(ix, iy);
+        ctx.lineTo(ix, iy);
       }
-      ctxOff.closePath();
-      ctxOff.fill();
+      ctx.closePath();
+      ctx.fill();
     }
 
     // --- White label blob on canvasL (screen blend) ---
@@ -990,26 +989,11 @@ window.addEventListener('pageshow', function (e) {
       canvasG.style.filter = 'none';
     }
 
-    // --- Copy offscreen → visible canvas with two-stage goo filter ---
-    // Split blur and contrast into separate passes to avoid Safari issues
-    // with chained ctx.filter functions. The visible canvas has only
-    // mix-blend-mode:difference and no CSS filter, fixing the colour-burn bug.
-    if (!glowMode) {
-      if (wantCrisp) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(canvasOff, 0, 0);
-      } else {
-        // Pass 1: blur canvasOff → canvasMid
-        ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
-        ctxMid.filter = 'blur(14px)';
-        ctxMid.drawImage(canvasOff, 0, 0);
-        ctxMid.filter = 'none';
-        // Pass 2: contrast canvasMid → visible canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.filter = 'contrast(18)';
-        ctx.drawImage(canvasMid, 0, 0);
-        ctx.filter = 'none';
-      }
+    // --- Toggle goo filter via CSS on canvas (filter and blend-mode on separate
+    // elements avoids the Safari colour-burn bug).
+    if (!glowMode && wantCrisp !== canvas._wasCrisp) {
+      canvas.style.filter = wantCrisp ? FILTER_IDLE : FILTER_ACTIVE;
+      canvas._wasCrisp = wantCrisp;
     }
 
     requestAnimationFrame(animate);
