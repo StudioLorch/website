@@ -4,7 +4,6 @@
    ============================================ */
 
 @import url('https://rsms.me/inter/inter.css');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap');
 
 @font-face {
   font-family: 'Satoshi';
@@ -405,7 +404,7 @@ body.home {
 
 /* Giant display word */
 .home-word {
-  font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+  font-family: 'Inter var', sans-serif;
   font-size: clamp(80px, 13vw, 210px);
   font-weight: 900;
   line-height: 0.88;
@@ -1165,6 +1164,15 @@ a.works-index__item:hover {
   position: sticky;
   top: calc(var(--site-header-height) + 24px);
   align-self: start;
+}
+
+a.section-label {
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+a.section-label:hover {
+  opacity: 0.5;
 }
 
 .timeline {
