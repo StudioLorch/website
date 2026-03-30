@@ -34,6 +34,7 @@
 :root {
   --color-bg: #ffffff;
   --color-text: #1a1a1a;
+  --color-heading: #1a1a1a;
   --color-text-muted: #888888;
   --color-accent: #1a1a1a;
   --color-border: #e8e8e8;
@@ -315,7 +316,7 @@ body.home .home-footer {
   font-weight: 300;
   line-height: 0.95;
   letter-spacing: 0;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin: 0;
   cursor: none;
 }
@@ -409,7 +410,7 @@ body.home {
   font-weight: 900;
   line-height: 0.88;
   letter-spacing: 0;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin: 0;
   opacity: 0;
   transform: translateY(24px);
@@ -1028,6 +1029,7 @@ a.works-index__item:hover {
   font-weight: 300;
   letter-spacing: -0.02em;
   margin-bottom: var(--spacing-md);
+  color: var(--color-heading);
 }
 
 .cta-section__email {
@@ -1103,6 +1105,7 @@ a.works-index__item:hover {
   line-height: 0.95;
   letter-spacing: -0.025em;
   margin: 0;
+  color: var(--color-heading);
   cursor: default;
   white-space: pre-line;
 }
@@ -1374,6 +1377,7 @@ a.works-index__item:hover {
   letter-spacing: -0.02em;
   line-height: 1.1;
   margin-bottom: var(--spacing-lg);
+  color: var(--color-heading);
 }
 
 .case-hero__intro {
@@ -1635,7 +1639,7 @@ a.works-index__item:hover {
   font-weight: 400;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: var(--color-text);
+  color: var(--color-heading);
   text-align: left;
   margin: 0;
   padding-top: 0;
@@ -2130,6 +2134,7 @@ body.about {
   line-height: 1.15;
   letter-spacing: -0.02em;
   margin-bottom: 28px;
+  color: var(--color-heading);
 }
 
 .about-intro__bio {
@@ -2573,7 +2578,7 @@ body.home .hero {
   font-weight: 300;
   line-height: 0.95;
   letter-spacing: -0.025em;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin: 0;
   cursor: default;
   white-space: pre-line;
@@ -3119,7 +3124,7 @@ body.home .site-menu-btn {
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.025em;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin: 0 0 clamp(24px, 3vw, 48px);
 }
 
