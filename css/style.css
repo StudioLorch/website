@@ -404,7 +404,7 @@ body.home {
 
 /* Giant display word */
 .home-word {
-  font-family: 'Inter var', sans-serif;
+  font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
   font-size: clamp(80px, 13vw, 210px);
   font-weight: 900;
   line-height: 0.88;
@@ -1217,8 +1217,8 @@ a.section-label:hover {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  list-style: disc;
-  padding-left: 18px;
+  list-style: none;
+  padding-left: 0;
   margin-bottom: 0;
 }
 
@@ -1227,6 +1227,14 @@ a.section-label:hover {
   font-weight: 400;
   color: #000;
   line-height: 1.15;
+  padding-left: 18px;
+  position: relative;
+}
+
+.timeline-item__note::before {
+  content: '+';
+  position: absolute;
+  left: 0;
 }
 
 /* === CLIENTS === */
@@ -1273,7 +1281,7 @@ a.section-label:hover {
   display: flex;
   gap: 0;
   width: max-content;
-  animation: about-logos-scroll 35s linear infinite;
+  animation: about-logos-scroll 140s linear infinite;
   will-change: transform;
 }
 
@@ -1292,31 +1300,25 @@ a.section-label:hover {
 }
 
 .about-clients__track--reverse {
-  animation: about-logos-scroll-reverse 35s linear infinite;
+  animation: about-logos-scroll-reverse 280s linear infinite;
 }
 
 .about-client-logo {
   flex-shrink: 0;
-  width: 160px;
-  height: 100px;
+  width: 224px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 24px;
+  padding: 0 34px;
 }
 
 .about-client-logo img {
   max-width: 100%;
-  max-height: 60px;
+  max-height: 84px;
   object-fit: contain;
   filter: grayscale(100%);
   opacity: 0.45;
-  transition: opacity 0.2s, filter 0.2s;
-}
-
-.about-client-logo img:hover {
-  filter: grayscale(0%);
-  opacity: 1;
 }
 
 /* === EDUCATION === */
@@ -2414,17 +2416,17 @@ a.proj-card:hover .proj-card__img img {
   }
 
   .about-clients__track {
-    animation-duration: 70s;
+    animation-duration: 280s;
   }
 
   .about-clients__track--reverse {
-    animation: about-logos-scroll-reverse 70s linear infinite;
+    animation: about-logos-scroll-reverse 280s linear infinite;
   }
 
   .about-client-logo {
-    width: 120px;
-    height: 80px;
-    padding: 0 16px;
+    width: 168px;
+    height: 112px;
+    padding: 0 22px;
   }
 
   /* Projekte page: already scrollable */

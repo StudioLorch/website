@@ -419,13 +419,17 @@ window.addEventListener('pageshow', function (e) {
   var wrapTargets = []; // { el, clone } — original DOM saved for resize re-wrap
 
   function wrapChars(el) {
+    // Prevent any soft line-wrapping regardless of how wide chars grow during hover.
+    // <br> hard breaks still work normally.
+    el.style.whiteSpace = 'nowrap';
+
     Array.from(el.childNodes).forEach(function (node) {
       if (node.nodeType !== 3 || !node.textContent) return;
 
       // Measure natural advance widths INCLUDING kerning via Range API.
       // Must happen before replacing the text node — kerning context is lost afterwards.
       var text = node.textContent;
-      var charWidths = Array.from(text).map(function (ch, i) {
+      var charWidths = Array.from(text).map(function (_, i) {
         var range = document.createRange();
         range.setStart(node, i);
         range.setEnd(node, i + 1);
