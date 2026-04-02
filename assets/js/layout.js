@@ -89,8 +89,7 @@
       <li class="bottom-nav__bg" aria-hidden="true"></li>
       <li class="bottom-nav__item"><a href="index.html" data-page="home">HOME</a></li>
       <li class="bottom-nav__item"><a href="projekte.html" data-page="projekte">PROJEKTE</a></li>
-      <li class="bottom-nav__item"><a href="services.html" data-page="services">SERVICES</a></li>
-      <li class="bottom-nav__item"><a href="about.html" data-page="about">ABOUT</a></li>
+<li class="bottom-nav__item"><a href="about.html" data-page="about">ABOUT</a></li>
       <li class="bottom-nav__item"><a href="#kontakt-anchor" class="js-nav-kontakt">KONTAKT</a></li>
     </ul>`;
 
