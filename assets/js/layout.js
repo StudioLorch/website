@@ -89,7 +89,7 @@
       <li class="bottom-nav__bg" aria-hidden="true"></li>
       <li class="bottom-nav__item"><a href="index.html" data-page="home">HOME</a></li>
       <li class="bottom-nav__item"><a href="projekte.html" data-page="projekte">PROJEKTE</a></li>
-      <!-- DISABLED: Services <li class="bottom-nav__item"><a href="services.html" data-page="services">SERVICES</a></li> -->
+      <li class="bottom-nav__item"><a href="services.html" data-page="services">SERVICES</a></li>
       <li class="bottom-nav__item"><a href="about.html" data-page="about">ABOUT</a></li>
       <li class="bottom-nav__item"><a href="#kontakt-anchor" class="js-nav-kontakt">KONTAKT</a></li>
     </ul>`;
@@ -526,7 +526,7 @@ window.addEventListener('pageshow', function (e) {
     requestAnimationFrame(tick);
   }
 
-  document.querySelectorAll('.hero__headline, .home-footer__headline, .about-hero__headline').forEach(function (el) {
+  document.querySelectorAll('.hero__headline, .home-footer__headline, .about-hero__headline, .services-hero__headline').forEach(function (el) {
     wrapTargets.push({ el: el, clone: el.cloneNode(true) });
     wrapChars(el);
   });

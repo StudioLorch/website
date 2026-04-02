@@ -2577,7 +2577,7 @@ body.home .hero {
 .hero__inner {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 32px;
 }
 
@@ -2607,7 +2607,7 @@ body.home .hero {
   font-size: clamp(13px, 1.5vw, 17px);
   line-height: 1.7;
   color: var(--color-text);
-  max-width: 20.83vw;
+  max-width: 30vw;
   min-width: 200px;
   flex-shrink: 0;
 }
@@ -3123,35 +3123,53 @@ body.home .site-menu-btn {
    ============================================ */
 
 .services-hero {
-  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-lg);
-  max-width: 1400px;
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+}
+
+.services-hero__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 0 var(--site-padding) clamp(40px, 5vw, 80px);
+  max-width: 2000px;
   margin: 0 auto;
 }
 
 .services-hero__headline {
   font-family: var(--font-main);
-  font-size: clamp(40px, 6vw, 96px);
+  font-size: clamp(28px, 7.5vw, 200px);
   font-weight: 300;
-  line-height: 1;
+  line-height: 0.95;
   letter-spacing: -0.025em;
   color: var(--color-heading);
-  margin: 0 0 clamp(24px, 3vw, 48px);
+  margin: 0;
+  cursor: default;
+  white-space: pre-line;
 }
 
 .services-hero__intro {
-  font-size: clamp(14px, 1.5vw, 18px);
+  font-size: clamp(13px, 1.5vw, 17px);
   line-height: 1.7;
   color: var(--color-text);
-  max-width: 640px;
+  max-width: 30vw;
+  min-width: 200px;
+  flex-shrink: 0;
 }
 
 .services-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(32px, 4vw, 64px);
-  padding: 0 var(--spacing-md) var(--spacing-xl);
-  max-width: 1400px;
+  padding: 0 var(--site-padding) var(--spacing-xl);
+  max-width: 2000px;
   margin: 0 auto;
+}
+
+.service-block {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  padding: 32px;
 }
 
 .service-block__title {
@@ -3190,8 +3208,8 @@ body.home .site-menu-btn {
 }
 
 .services-closing {
-  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-xl);
-  max-width: 1400px;
+  padding: var(--spacing-lg) var(--site-padding) var(--spacing-xl);
+  max-width: 2000px;
   margin: 0 auto;
 }
 
@@ -3203,6 +3221,23 @@ body.home .site-menu-btn {
 }
 
 @media (max-width: 900px) {
+  .services-hero__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 0 24px clamp(32px, 6vw, 48px);
+  }
+
+  .services-hero__intro {
+    max-width: none;
+    min-width: auto;
+  }
+
+  .services-hero__headline {
+    font-size: clamp(32px, 9vw, 48px);
+    line-height: 1.1;
+  }
+
   .services-grid {
     grid-template-columns: 1fr;
     gap: 48px;
